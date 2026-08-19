@@ -317,7 +317,7 @@ return function(Config)
 	function Window:Minimize()
 		Window.Minimized = not Window.Minimized
 		Window.Root.Visible = not Window.Minimized
-		if not MinimizeNotif then
+		if not MinimizeNotif and not Config.DisableMinimizeNotification then
 			MinimizeNotif = true
 			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
 			Library:Notify({
