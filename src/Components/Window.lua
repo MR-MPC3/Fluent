@@ -314,19 +314,41 @@ return function(Config)
 		end
 	end)
 
-	function Window:Minimize()
-		Window.Minimized = not Window.Minimized
-		Window.Root.Visible = not Window.Minimized
-		if not MinimizeNotif then
-			MinimizeNotif = true
-			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-			Library:Notify({
-				Title = "Interface",
-				Content = "Press " .. Key .. " to toggle the interface.",
-				Duration = 6
-			})
-		end
-	end
+function Window:Minimize()
+    Window.Minimized = not Window.Minimized
+
+    if Window.Minimized then
+        -- 1. Đưa chính nút Minimize cũ ra ngoài giao diện tổng
+        -- Dùng Window.Root.Parent (thường là ScreenGui) để đảm bảo nút không bị ẩn
+        Window.TitleBar.MinButton.Frame.Parent = Window.Root.Parent 
+        
+        -- 2. Đặt kích thước vùng bấm to hơn cho điện thoại (48x48)
+        Window.TitleBar.MinButton.Frame.Size = UDim2.fromOffset(48, 48)
+
+        -- 3. Di chuyển nút ra vị trí dễ bấm trên màn hình
+        Window.TitleBar.MinButton.Frame.Position = UDim2.fromOffset(20, 100)
+        Window.TitleBar.MinButton.Frame.AnchorPoint = Vector2.new(0, 0)
+        Window.TitleBar.MinButton.Frame.ZIndex = 999
+
+        -- 4. Ẩn toàn bộ menu
+        Window.Root.Visible = false
+    else
+        -- 1. Hiện lại toàn bộ menu
+        Window.Root.Visible = true
+
+        -- 2. Đưa chính nút Minimize đó trả về lại TitleBar
+        Window.TitleBar.MinButton.Frame.Parent = Window.TitleBar.Frame
+
+        -- 3. Trả lại kích thước gốc của nút trong menu
+        Window.TitleBar.MinButton.Frame.Size = UDim2.new(0, 34, 1, -8)
+
+        -- 4. Trả lại vị trí và cấu hình gốc trên TitleBar
+        -- Lưu ý: Thông số Position này phải khớp với thiết kế ban đầu của Fluent
+        Window.TitleBar.MinButton.Frame.Position = UDim2.new(1, -80, 0, 4) 
+        Window.TitleBar.MinButton.Frame.AnchorPoint = Vector2.new(1, 0)
+        Window.TitleBar.MinButton.Frame.ZIndex = 1
+    end
+end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
