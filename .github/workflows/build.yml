@@ -1,0 +1,56 @@
+name: Build Fluent
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Rojo
+        run: |
+          curl -L https://github.com/rojo-rbx/rojo/releases/latest/download/rojo-linux-x86_64 -o rojo
+          chmod +x rojo
+          sudo mv rojo /usr/local/bin/rojo
+
+      - name: Install Lune
+        run: |
+          curl -L https://github.com/lune-org/lune/releases/latest/download/lune-linux-x86_64 -o lune
+          chmod +x lune
+          sudo mv lune /usr/local/bin/lune
+
+      - name: Build Fluent
+        run: pnpm run bundle
+
+      - name: Find generated files
+        run: |
+          echo "===== GENERATED FILES ====="
+          find . -type f \( -name "*.lua" -o -name "*.luau" -o -name "*.rbxm" \) | sort
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fluent-build
+          path: |
+            dist/**
+            main.lua
