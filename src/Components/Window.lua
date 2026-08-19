@@ -327,51 +327,6 @@ return function(Config)
 				})
 			end
 		end
-	
-		function Window:MinimizeToTitleBar()
-		Window.Minimized = not Window.Minimized
-	
-		if Window.Minimized then
-			-- Ẩn nội dung
-			Window.TabDisplay.Visible = false
-			Window.ContainerCanvas.Visible = false
-			TabFrame.Visible = false
-			ResizeStartFrame.Visible = false
-	
-			Window.TitleBar.Frame.Visible = true
-	
-			local TitleBarHeight = Window.TitleBar.Frame.Size.Y.Offset
-	
-			SizeMotor:setGoal({
-				X = Flipper.Spring.new(Window.Size.X.Offset, {
-					frequency = 6
-				}),
-				Y = Flipper.Spring.new(TitleBarHeight, {
-					frequency = 6
-				}),
-			})
-		else
-			Window.TabDisplay.Visible = true
-			Window.ContainerCanvas.Visible = true
-			TabFrame.Visible = true
-			ResizeStartFrame.Visible = true
-			Window.TitleBar.Frame.Visible = true
-	
-			SizeMotor:setGoal({
-				X = Flipper.Spring.new(Window.Size.X.Offset, {
-					frequency = 6
-				}),
-				Y = Flipper.Spring.new(Config.Size.Y.Offset, {
-					frequency = 6
-				}),
-			})
-	
-			Window.Size = UDim2.fromOffset(
-				Window.Size.X.Offset,
-				Config.Size.Y.Offset
-			)
-		end
-	end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
