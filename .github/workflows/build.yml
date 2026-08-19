@@ -28,22 +28,19 @@ jobs:
         run: pnpm install
 
       - name: Install Aftman
-        run: |
-          curl -fsSL https://github.com/LPGhatguy/aftman/releases/latest/download/aftman-x86_64-unknown-linux-gnu.tar.gz -o aftman.tar.gz
-          tar -xzf aftman.tar.gz
-          chmod +x aftman
-          sudo mv aftman /usr/local/bin/aftman
-          aftman --version
+        uses: Roblox/setup-aftman@v0.3.0
 
-      - name: Install Rojo and Lune
-        run: |
-          aftman install
-          echo "$HOME/.aftman/bin" >> "$GITHUB_PATH"
+      - name: Install tools
+        run: aftman install
+
+      - name: Add Aftman tools to PATH
+        run: echo "$HOME/.aftman/bin" >> "$GITHUB_PATH"
 
       - name: Check tools
         run: |
           rojo --version
           lune --version
+          darklua --version
 
       - name: Build Fluent
         run: pnpm run bundle
