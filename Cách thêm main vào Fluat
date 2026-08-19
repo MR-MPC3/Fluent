@@ -78,3 +78,4 @@ Artifacts
 Bạn cần thấy:
 
 Fluent-build nhấn vào đó tải về giải nén rồi sau đó lại úp 2 file main và main.rbxm lên lại MR-MPC3/Fluent 
+sau đó sẽ có được đoạn local v14 = loadstring(game:HttpGet("https://raw.githubusercontent.com/MR-MPC3/Fluent/master/main.lua"))() dùng cho script
