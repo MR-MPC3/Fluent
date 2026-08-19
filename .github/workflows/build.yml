@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -27,14 +27,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Aftman
-        uses: Roblox/setup-aftman@v0.3.0
-
-      - name: Install tools
-        run: aftman install
-
-      - name: Add Aftman tools to PATH
-        run: echo "$HOME/.aftman/bin" >> "$GITHUB_PATH"
+      - name: Setup Rokit
+        uses: paradoxum-games/setup-rokit@v3
 
       - name: Check tools
         run: |
