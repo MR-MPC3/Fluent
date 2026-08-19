@@ -314,19 +314,10 @@ return function(Config)
 		end
 	end)
 
-	   function Window:Minimize()
-			Window.Minimized = not Window.Minimized
-			Window.Root.Visible = not Window.Minimized
-			if not MinimizeNotif then
-				MinimizeNotif = true
-				local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-				Library:Notify({
-					Title = "Interface",
-					Content = "Press " .. Key .. " to toggle the interface.",
-					Duration = 6
-				})
-			end
-		end
+	function Window:Minimize()
+	    Window.Minimized = not Window.Minimized
+	    Window.Root.Visible = not Window.Minimized
+	end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
