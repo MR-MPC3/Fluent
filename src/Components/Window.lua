@@ -314,63 +314,64 @@ return function(Config)
 		end
 	end)
 
-function Window:Minimize()
-	Window.Minimized = not Window.Minimized
-
-	if Window.Minimized then
-		-- Ẩn toàn bộ nội dung, chỉ giữ thanh tiêu đề
-		Window.TabDisplay.Visible = false
-		Window.ContainerCanvas.Visible = false
-		TabFrame.Visible = false
-		ResizeStartFrame.Visible = false
-
-		local TitleBarHeight = Window.TitleBar.Frame.Size.Y.Offset
-
-		SizeMotor:setGoal({
-			X = Flipper.Spring.new(Window.Size.X.Offset, {
-				frequency = 6
-			}),
-			Y = Flipper.Spring.new(TitleBarHeight, {
-				frequency = 6
-			}),
-		})
-
-	else
-		-- Khôi phục toàn bộ menu
-		Window.TabDisplay.Visible = true
-		Window.ContainerCanvas.Visible = true
-		TabFrame.Visible = true
-		ResizeStartFrame.Visible = true
-
-		SizeMotor:setGoal({
-			X = Flipper.Spring.new(Window.Size.X.Offset, {
-				frequency = 6
-			}),
-			Y = Flipper.Spring.new(Config.Size.Y.Offset, {
-				frequency = 6
-			}),
-		})
-
-		Window.Size = UDim2.fromOffset(
-			Window.Size.X.Offset,
-			Config.Size.Y.Offset
-		)
+	   function Window:Minimize()
+			Window.Minimized = not Window.Minimized
+			Window.Root.Visible = not Window.Minimized
+			if not MinimizeNotif then
+				MinimizeNotif = true
+				local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
+				Library:Notify({
+					Title = "Interface",
+					Content = "Press " .. Key .. " to toggle the interface.",
+					Duration = 6
+				})
+			end
+		end
+	
+		function Window:MinimizeToTitleBar()
+		Window.Minimized = not Window.Minimized
+	
+		if Window.Minimized then
+			-- Ẩn nội dung
+			Window.TabDisplay.Visible = false
+			Window.ContainerCanvas.Visible = false
+			TabFrame.Visible = false
+			ResizeStartFrame.Visible = false
+	
+			Window.TitleBar.Frame.Visible = true
+	
+			local TitleBarHeight = Window.TitleBar.Frame.Size.Y.Offset
+	
+			SizeMotor:setGoal({
+				X = Flipper.Spring.new(Window.Size.X.Offset, {
+					frequency = 6
+				}),
+				Y = Flipper.Spring.new(TitleBarHeight, {
+					frequency = 6
+				}),
+			})
+		else
+			Window.TabDisplay.Visible = true
+			Window.ContainerCanvas.Visible = true
+			TabFrame.Visible = true
+			ResizeStartFrame.Visible = true
+			Window.TitleBar.Frame.Visible = true
+	
+			SizeMotor:setGoal({
+				X = Flipper.Spring.new(Window.Size.X.Offset, {
+					frequency = 6
+				}),
+				Y = Flipper.Spring.new(Config.Size.Y.Offset, {
+					frequency = 6
+				}),
+			})
+	
+			Window.Size = UDim2.fromOffset(
+				Window.Size.X.Offset,
+				Config.Size.Y.Offset
+			)
+		end
 	end
-
-	if not MinimizeNotif then
-		MinimizeNotif = true
-
-		local Key = Library.MinimizeKeybind
-			and Library.MinimizeKeybind.Value
-			or Library.MinimizeKey.Name
-
-		Library:Notify({
-			Title = "Interface",
-			Content = "Press " .. Key .. " to toggle the interface.",
-			Duration = 6
-		})
-	end
-end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
