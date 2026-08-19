@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -29,15 +29,17 @@ jobs:
 
       - name: Install Rojo
         run: |
-          curl -L https://github.com/rojo-rbx/rojo/releases/latest/download/rojo-linux-x86_64 -o rojo
+          curl -fsSL https://github.com/rojo-rbx/rojo/releases/download/v7.6.1/rojo-linux-x86_64 -o rojo
           chmod +x rojo
           sudo mv rojo /usr/local/bin/rojo
+          rojo --version
 
       - name: Install Lune
         run: |
-          curl -L https://github.com/lune-org/lune/releases/latest/download/lune-linux-x86_64 -o lune
+          curl -fsSL https://github.com/lune-org/lune/releases/download/v0.8.9/lune-linux-x86_64 -o lune
           chmod +x lune
           sudo mv lune /usr/local/bin/lune
+          lune --version
 
       - name: Build Fluent
         run: pnpm run bundle
@@ -54,3 +56,4 @@ jobs:
           path: |
             dist/**
             main.lua
+          if-no-files-found: warn
