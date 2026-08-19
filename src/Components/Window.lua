@@ -314,9 +314,26 @@ return function(Config)
 		end
 	end)
 
-	function Window:Minimize()
-	    Window.Minimized = not Window.Minimized
-	    Window.Root.Visible = not Window.Minimized
+function Window:Minimize()
+		Window.Minimized = not Window.Minimized
+		Window.Root.Visible = not Window.Minimized
+		
+		-- Thêm dòng này để ẩn luôn cái nút màu trắng bên lề trái đi
+		if Window.MinimizeButton then
+			Window.MinimizeButton.Visible = false
+		elseif Window.OpenButton then
+			Window.OpenButton.Visible = false
+		end
+
+		if not MinimizeNotif then
+			MinimizeNotif = true
+			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
+			Library:Notify({
+				Title = "Interface",
+				Content = "Press " .. Key .. " to toggle the interface.",
+				Duration = 6
+			})
+		end
 	end
 
 	function Window:Destroy()
