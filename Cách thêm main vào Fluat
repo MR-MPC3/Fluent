@@ -1,0 +1,80 @@
+
+Mở:
+
+MR-MPC3/Fluent → .github → workflows → build.yml
+
+Xóa toàn bộ nội dung cũ, thay bằng:
+
+name: Build Fluent
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+
+      - name: Install dependencies
+        run: pnpm install
+
+
+      - name: Setup Rokit
+        uses: paradoxum-games/setup-rokit@v3
+
+
+      - name: Check tools
+        run: |
+          rojo --version
+          lune --version
+          darklua --version
+
+
+      - name: Build Fluent
+        run: pnpm run bundle
+
+
+      - name: Find generated files
+        run: |
+          echo "===== GENERATED FILES ====="
+          find . -type f \( -name "*.lua" -o -name "*.luau" -o -name "*.rbxm" \) | sort
+
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fluent-build
+          path: |
+            dist/**
+            main.lua
+          if-no-files-found: warn
+
+rồi nhấn Action rồi vào thấy Build xanh Sau đó kéo xuống dưới cùng tìm mục:
+
+Artifacts
+
+Bạn cần thấy:
+
+Fluent-build nhấn vào đó tải về giải nén rồi sau đó lại úp 2 file main và main.rbxm lên lại MR-MPC3/Fluent 
