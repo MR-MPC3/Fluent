@@ -315,32 +315,62 @@ return function(Config)
 	end)
 
 function Window:Minimize()
-		Window.Minimized = not Window.Minimized
-		
-		-- Chỉ ẩn phần thân bên dưới của menu (chứa các tính năng, tab...), 
-		-- giữ lại thanh tiêu đề (Topbar) để tiếp tục hiển thị và kéo thả được.
-		if Window.Container then
-			Window.Container.Visible = not Window.Minimized
-		elseif Window.Body then
-			Window.Body.Visible = not Window.Minimized
-		end
+	Window.Minimized = not Window.Minimized
 
-		-- Ẩn cái nút nhỏ màu trắng ở lề màn hình (nếu thư viện có tạo ra nó)
-		if Window.FloatButton then
-			Window.FloatButton.Visible = false
-		end
+	if Window.Minimized then
+		-- Ẩn toàn bộ nội dung, chỉ giữ thanh tiêu đề
+		Window.TabDisplay.Visible = false
+		Window.ContainerCanvas.Visible = false
+		TabFrame.Visible = false
+		ResizeStartFrame.Visible = false
 
-		-- Giữ nguyên phần thông báo lần đầu (nếu muốn)
-		if not MinimizeNotif then
-			MinimizeNotif = true
-			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-			Library:Notify({
-				Title = "Interface",
-				Content = "Press " .. Key .. " to toggle the interface.",
-				Duration = 6
-			})
-		end
+		local TitleBarHeight = Window.TitleBar.Frame.Size.Y.Offset
+
+		SizeMotor:setGoal({
+			X = Flipper.Spring.new(Window.Size.X.Offset, {
+				frequency = 6
+			}),
+			Y = Flipper.Spring.new(TitleBarHeight, {
+				frequency = 6
+			}),
+		})
+
+	else
+		-- Khôi phục toàn bộ menu
+		Window.TabDisplay.Visible = true
+		Window.ContainerCanvas.Visible = true
+		TabFrame.Visible = true
+		ResizeStartFrame.Visible = true
+
+		SizeMotor:setGoal({
+			X = Flipper.Spring.new(Window.Size.X.Offset, {
+				frequency = 6
+			}),
+			Y = Flipper.Spring.new(Config.Size.Y.Offset, {
+				frequency = 6
+			}),
+		})
+
+		Window.Size = UDim2.fromOffset(
+			Window.Size.X.Offset,
+			Config.Size.Y.Offset
+		)
 	end
+
+	if not MinimizeNotif then
+		MinimizeNotif = true
+
+		local Key = Library.MinimizeKeybind
+			and Library.MinimizeKeybind.Value
+			or Library.MinimizeKey.Name
+
+		Library:Notify({
+			Title = "Interface",
+			Content = "Press " .. Key .. " to toggle the interface.",
+			Duration = 6
+		})
+	end
+end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
