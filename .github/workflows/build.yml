@@ -27,18 +27,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Rojo
+      - name: Install Aftman
         run: |
-          curl -fsSL https://github.com/rojo-rbx/rojo/releases/download/v7.6.1/rojo-linux-x86_64 -o rojo
-          chmod +x rojo
-          sudo mv rojo /usr/local/bin/rojo
-          rojo --version
+          curl -fsSL https://github.com/LPGhatguy/aftman/releases/latest/download/aftman-x86_64-unknown-linux-gnu.tar.gz -o aftman.tar.gz
+          tar -xzf aftman.tar.gz
+          chmod +x aftman
+          sudo mv aftman /usr/local/bin/aftman
+          aftman --version
 
-      - name: Install Lune
+      - name: Install Rojo and Lune
         run: |
-          curl -fsSL https://github.com/lune-org/lune/releases/download/v0.8.9/lune-linux-x86_64 -o lune
-          chmod +x lune
-          sudo mv lune /usr/local/bin/lune
+          aftman install
+          echo "$HOME/.aftman/bin" >> "$GITHUB_PATH"
+
+      - name: Check tools
+        run: |
+          rojo --version
           lune --version
 
       - name: Build Fluent
