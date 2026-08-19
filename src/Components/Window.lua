@@ -128,6 +128,23 @@ return function(Config)
 		ResizeStartFrame,
 	})
 
+	local RestoreButton = New("TextButton", {
+	    Size = UDim2.fromOffset(48, 48),
+	    Position = UDim2.fromOffset(20, 100),
+	    BackgroundTransparency = 0.15,
+	    Text = "☰",
+	    TextSize = 22,
+	    TextColor3 = Color3.fromRGB(255, 255, 255),
+	    Visible = false,
+	    AutoButtonColor = true,
+	    Parent = Config.Parent,
+	    ZIndex = 999,
+	}, {
+	    New("UICorner", {
+	        CornerRadius = UDim.new(0, 12),
+	    }),
+	})
+
 	Window.TitleBar = require(script.Parent.TitleBar)({
 		Title = Config.Title,
 		SubTitle = Config.SubTitle,
@@ -315,23 +332,42 @@ return function(Config)
 	end)
 
 	function Window:Minimize()
-		Window.Minimized = not Window.Minimized
-		Window.Root.Visible = not Window.Minimized
-		if not MinimizeNotif then
-			MinimizeNotif = true
-			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-			Library:Notify({
-				Title = "Interface",
-				Content = "Press " .. Key .. " to toggle the interface.",
-				Duration = 6
-			})
-		end
+	    Window.Minimized = not Window.Minimized
+	
+	    if Window.Minimized then
+	        Window.Root.Visible = false
+	        RestoreButton.Visible = true
+	    else
+	        Window.Root.Visible = true
+	        RestoreButton.Visible = false
+	    end
+	
+	    if not MinimizeNotif then
+	        MinimizeNotif = true
+	
+	        local Key = Library.MinimizeKeybind
+	            and Library.MinimizeKeybind.Value
+	            or Library.MinimizeKey.Name
+	
+	        Library:Notify({
+	            Title = "Interface",
+	            Content = "Press " .. Key .. " to toggle the interface.",
+	            Duration = 6
+	        })
+	    end
 	end
+
+	Creator.AddSignal(RestoreButton.MouseButton1Click, function()
+	    Window.Minimized = false
+	    Window.Root.Visible = true
+	    RestoreButton.Visible = false
+	end)
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
 			Window.AcrylicPaint.Model:Destroy()
 		end
+		RestoreButton:Destroy()
 		Window.Root:Destroy()
 	end
 
