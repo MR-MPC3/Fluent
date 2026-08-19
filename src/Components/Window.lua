@@ -315,18 +315,44 @@ return function(Config)
 	end)
 
 	function Window:Minimize()
-			Window.Minimized = not Window.Minimized
-			Window.Root.Visible = not Window.Minimized
-			if not MinimizeNotif then
-				MinimizeNotif = true
-				local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-				Library:Notify({
-					Title = "Interface",
-					Content = "Press " .. Key .. " to toggle the interface.",
-					Duration = 6
-				})
-			end
-		end
+	    Window.Minimized = not Window.Minimized
+	
+	    local MinButton = Window.TitleBar.MinButton.Frame
+	
+	    if Window.Minimized then
+	        -- Lưu Parent/Position/Size gốc chỉ một lần
+	        if not Window._MinButtonOriginalParent then
+	            Window._MinButtonOriginalParent = MinButton.Parent
+	            Window._MinButtonOriginalSize = MinButton.Size
+	            Window._MinButtonOriginalPosition = MinButton.Position
+	            Window._MinButtonOriginalAnchorPoint = MinButton.AnchorPoint
+	        end
+	
+	        -- Đưa CHÍNH nút Minimize hiện tại ra ngoài Window.Root
+	        MinButton.Parent = Window.Root.Parent
+	
+	        -- Giữ icon cũ, chỉ làm vùng bấm lớn hơn cho mobile
+	        MinButton.Size = UDim2.fromOffset(48, 48)
+	        MinButton.Position = UDim2.fromOffset(20, 100)
+	        MinButton.AnchorPoint = Vector2.new(0, 0)
+	        MinButton.ZIndex = 999
+	        MinButton.Visible = true
+	
+	        -- Ẩn menu
+	        Window.Root.Visible = false
+	    else
+	        -- Hiện menu trước
+	        Window.Root.Visible = true
+	
+	        -- Đưa CHÍNH nút đó về vị trí ban đầu
+	        MinButton.Parent = Window._MinButtonOriginalParent
+	        MinButton.Size = Window._MinButtonOriginalSize
+	        MinButton.Position = Window._MinButtonOriginalPosition
+	        MinButton.AnchorPoint = Window._MinButtonOriginalAnchorPoint
+	        MinButton.ZIndex = 1
+	        MinButton.Visible = true
+	    end
+	end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
