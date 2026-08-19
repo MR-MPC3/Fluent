@@ -314,9 +314,23 @@ return function(Config)
 		end
 	end)
 
-	function Window:Minimize()
+function Window:Minimize()
 		Window.Minimized = not Window.Minimized
-		Window.Root.Visible = not Window.Minimized
+		
+		-- Chỉ ẩn phần thân bên dưới của menu (chứa các tính năng, tab...), 
+		-- giữ lại thanh tiêu đề (Topbar) để tiếp tục hiển thị và kéo thả được.
+		if Window.Container then
+			Window.Container.Visible = not Window.Minimized
+		elseif Window.Body then
+			Window.Body.Visible = not Window.Minimized
+		end
+
+		-- Ẩn cái nút nhỏ màu trắng ở lề màn hình (nếu thư viện có tạo ra nó)
+		if Window.FloatButton then
+			Window.FloatButton.Visible = false
+		end
+
+		-- Giữ nguyên phần thông báo lần đầu (nếu muốn)
 		if not MinimizeNotif then
 			MinimizeNotif = true
 			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
