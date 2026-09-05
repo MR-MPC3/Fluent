@@ -314,32 +314,19 @@ return function(Config)
 		end
 	end)
 
-function Window:Minimize()
-	Window.Minimized = not Window.Minimized
-	Window.Root.Visible = not Window.Minimized
-
-	-- Ẩn luôn mọi thứ có thể là nút trắng còn sót
-	local gui = Window.Root.Parent -- ScreenGui chứa Window
-	if gui then
-		for _, v in pairs(gui:GetDescendants()) do
-			if v:IsA("Frame") or v:IsA("ImageButton") or v:IsA("TextButton") then
-				if v.Name:lower():find("min") or v.Name:lower():find("open") or v.Name:lower():find("float") or v.Name:lower():find("toggle") then
-					v.Visible = not Window.Minimized
-				end
-			end
+	function Window:Minimize()
+		Window.Minimized = not Window.Minimized
+		Window.Root.Visible = not Window.Minimized
+		if not MinimizeNotif then
+			MinimizeNotif = true
+			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
+			Library:Notify({
+				Title = "Interface",
+				Content = "Press " .. Key .. " to toggle the interface.",
+				Duration = 6
+			})
 		end
 	end
-
-	if not MinimizeNotif then
-		MinimizeNotif = true
-		local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
-		Library:Notify({
-			Title = "Interface",
-			Content = "Press " .. Key .. " to toggle the interface.",
-			Duration = 6
-		})
-	end
-end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
