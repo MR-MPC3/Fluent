@@ -1,6 +1,5 @@
 -- i will rewrite this someday
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
 local Camera = game:GetService("Workspace").CurrentCamera
 
@@ -32,6 +31,7 @@ return function(Config)
 
 	local Dragging, DragInput, MousePos, StartPos = false
 	local Resizing, ResizePos = false
+	local MinimizeNotif = false
 
 	Window.AcrylicPaint = Acrylic.AcrylicPaint()
 	Window.TabWidth = Config.TabWidth
@@ -138,174 +138,6 @@ return function(Config)
 	if require(Root).UseAcrylic then
 		Window.AcrylicPaint.AddParent(Window.Root)
 	end
-
-	-------------------------------------------------------
-	-- FLOATING TOGGLE BUTTON
-	-- Config.ToggleIcon được truyền từ Fluent:CreateWindow()
-	-------------------------------------------------------
-
-	local ToggleButton = New("ImageButton", {
-		Name = "FluentToggleButton",
-		BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-		BorderSizePixel = 0,
-		Position = UDim2.fromOffset(45, 85),
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Size = UDim2.fromOffset(50, 50),
-		Image = Config.ToggleIcon or "",
-		AutoButtonColor = false,
-		ZIndex = 999,
-		Parent = Config.Parent,
-	})
-
-	New("UICorner", {
-		CornerRadius = UDim.new(1, 0),
-		Parent = ToggleButton,
-	})
-
-	local ToggleScale = New("UIScale", {
-		Scale = 1,
-		Parent = ToggleButton,
-	})
-
-	local ToggleTween
-	local ToggleDragging = false
-	local ToggleDragStart
-	local ToggleStartPos
-	local ToggleIsDragged = false
-	local ToggleAnimationId = 0
-
-	local function StopToggleTween()
-		if ToggleTween then
-			pcall(function()
-				ToggleTween:Cancel()
-			end)
-			ToggleTween = nil
-		end
-	end
-
-	local function AnimateToggle(scale, time, style)
-		StopToggleTween()
-
-		ToggleTween = TweenService:Create(
-			ToggleScale,
-			TweenInfo.new(
-				time,
-				style or Enum.EasingStyle.Quad,
-				Enum.EasingDirection.Out
-			),
-			{ Scale = scale }
-		)
-
-		ToggleTween:Play()
-	end
-
-	local function BounceToggle()
-		ToggleAnimationId += 1
-		local id = ToggleAnimationId
-
-		AnimateToggle(0.82, 0.08)
-
-		task.delay(0.08, function()
-			if id ~= ToggleAnimationId or ToggleDragging then
-				return
-			end
-
-			AnimateToggle(1.08, 0.16, Enum.EasingStyle.Back)
-
-			task.delay(0.16, function()
-				if id ~= ToggleAnimationId or ToggleDragging then
-					return
-				end
-
-				AnimateToggle(1, 0.12)
-			end)
-		end)
-	end
-
-	Creator.AddSignal(ToggleButton.InputBegan, function(Input)
-		if
-			Input.UserInputType ~= Enum.UserInputType.MouseButton1
-			and Input.UserInputType ~= Enum.UserInputType.Touch
-		then
-			return
-		end
-
-		ToggleDragging = true
-		ToggleIsDragged = false
-		ToggleDragStart = Input.Position
-		ToggleStartPos = ToggleButton.Position
-
-		ToggleAnimationId += 1
-		AnimateToggle(0.88, 0.12)
-	end)
-
-	Creator.AddSignal(UserInputService.InputChanged, function(Input)
-		if not ToggleDragging then
-			return
-		end
-
-		if
-			Input.UserInputType ~= Enum.UserInputType.MouseMovement
-			and Input.UserInputType ~= Enum.UserInputType.Touch
-		then
-			return
-		end
-
-		local Delta = Input.Position - ToggleDragStart
-
-		if Delta.Magnitude > 6 then
-			ToggleIsDragged = true
-		end
-
-		if ToggleIsDragged then
-			ToggleButton.Position = UDim2.new(
-				ToggleStartPos.X.Scale,
-				ToggleStartPos.X.Offset + Delta.X,
-				ToggleStartPos.Y.Scale,
-				ToggleStartPos.Y.Offset + Delta.Y
-			)
-		end
-	end)
-
-	Creator.AddSignal(UserInputService.InputEnded, function(Input)
-		if not ToggleDragging then
-			return
-		end
-
-		if
-			Input.UserInputType ~= Enum.UserInputType.MouseButton1
-			and Input.UserInputType ~= Enum.UserInputType.Touch
-		then
-			return
-		end
-
-		ToggleDragging = false
-		ToggleAnimationId += 1
-
-		AnimateToggle(1.08, 0.18, Enum.EasingStyle.Back)
-
-		local id = ToggleAnimationId
-
-		task.delay(0.18, function()
-			if id ~= ToggleAnimationId or ToggleDragging then
-				return
-			end
-
-			AnimateToggle(1, 0.12)
-		end)
-	end)
-
-	Creator.AddSignal(ToggleButton.Activated, function()
-		if ToggleIsDragged then
-			ToggleIsDragged = false
-			return
-		end
-
-		BounceToggle()
-		Window:Minimize()
-	end)
-
-	Window.ToggleButton = ToggleButton
 
 	local SizeMotor = Flipper.GroupMotor.new({
 		X = Window.Size.X.Offset,
@@ -485,17 +317,21 @@ return function(Config)
 	function Window:Minimize()
 		Window.Minimized = not Window.Minimized
 		Window.Root.Visible = not Window.Minimized
+		if not MinimizeNotif then
+			MinimizeNotif = true
+			local Key = Library.MinimizeKeybind and Library.MinimizeKeybind.Value or Library.MinimizeKey.Name
+			Library:Notify({
+				Title = "Interface",
+				Content = "Press " .. Key .. " to toggle the interface.",
+				Duration = 6
+			})
+		end
 	end
 
 	function Window:Destroy()
 		if require(Root).UseAcrylic then
 			Window.AcrylicPaint.Model:Destroy()
 		end
-
-		if Window.ToggleButton then
-			Window.ToggleButton:Destroy()
-		end
-
 		Window.Root:Destroy()
 	end
 
