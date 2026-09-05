@@ -22,7 +22,7 @@ return function(Config)
 		Minimized = false,
 		Maximized = false,
 		Size = Config.Size,
-		CurrentPos = 0
+		CurrentPos = 0,
 		TabWidth = 0,
 		Position = UDim2.fromOffset(
 			Camera.ViewportSize.X / 2 - Config.Size.X.Offset / 2,
