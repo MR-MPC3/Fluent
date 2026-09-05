@@ -16,9 +16,18 @@ local NotificationModule = require(Components.Notification)
 local New = Creator.New
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
+local GuiParent
+if RunService:IsStudio() then
+    GuiParent = LocalPlayer.PlayerGui
+else
+    GuiParent = (gethui and gethui()) or game:GetService("CoreGui")
+end
 local GUI = New("ScreenGui", {
-	Parent = RunService:IsStudio() and LocalPlayer.PlayerGui or game:GetService("CoreGui"),
+    Parent = GuiParent,
+    ResetOnSpawn = false,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 })
+
 ProtectGui(GUI)
 NotificationModule:Init(GUI)
 
