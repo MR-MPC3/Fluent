@@ -128,6 +128,10 @@ function Library:CreateWindow(Config)
 		Title = Config.Title,
 		SubTitle = Config.SubTitle,
 		TabWidth = Config.TabWidth,
+	
+		-- Floating Fat Cat Button
+		ToggleIcon = Config.ToggleIcon,
+		StartMinimized = Config.StartMinimized,
 	})
 
 	Library.Window = Window
