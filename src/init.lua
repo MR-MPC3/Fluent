@@ -23,9 +23,11 @@ else
     GuiParent = (gethui and gethui()) or game:GetService("CoreGui")
 end
 local GUI = New("ScreenGui", {
+    Name = "FluentGUI",
     Parent = GuiParent,
     ResetOnSpawn = false,
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    ZIndexBehavior = Enum.ZIndexBehavior.Global,
+    DisplayOrder = 999999,
 })
 
 ProtectGui(GUI)
