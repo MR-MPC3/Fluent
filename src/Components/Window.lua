@@ -128,42 +128,6 @@ return function(Config)
 		ResizeStartFrame,
 	})
 
-	
-	-- FLUENT FLOATING TOGGLE BUTTON
-	local FloatingGui = New("ScreenGui", {
-		Name = "FluentFloatingToggle",
-		ResetOnSpawn = false,
-		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-		Parent = Config.Parent,
-	})
-
-	local FloatingButton = New("ImageButton", {
-		Name = "ToggleButton",
-		BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-		BorderSizePixel = 0,
-		Position = UDim2.fromOffset(45, 85),
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Size = UDim2.fromOffset(50, 50),
-		Image = Config.ToggleIcon or "",
-		AutoButtonColor = false,
-		Visible = true,
-		Parent = FloatingGui,
-	})
-
-	New("UICorner", {
-		CornerRadius = UDim.new(1, 0),
-		Parent = FloatingButton,
-	})
-
-	local FloatingScale = New("UIScale", {
-		Scale = 1,
-		Parent = FloatingButton,
-	})
-
-	Window.FloatingGui = FloatingGui
-	Window.FloatingButton = FloatingButton
-	
-
 	Window.TitleBar = require(script.Parent.TitleBar)({
 		Title = Config.Title,
 		SubTitle = Config.SubTitle,
