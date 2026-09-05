@@ -1,6 +1,6 @@
 -- i will rewrite this someday
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService"
+local TweenService = game:GetService("TweenService")
 local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
 local Camera = game:GetService("Workspace").CurrentCamera
 
