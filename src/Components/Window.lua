@@ -131,21 +131,34 @@ return function(Config)
 
 	-- FLOATING FAT CAT TOGGLE BUTTON
 	local FatCatButton = New("ImageButton", {
-		Name = "FatCatButton",
-		BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-		BorderSizePixel = 0,
-		Position = UDim2.fromOffset(45, 85),
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Size = UDim2.fromOffset(50, 50),
-		Image = Config.ToggleIcon or "rbxassetid://13717478897",
-		AutoButtonColor = false,
-		Visible = true,
-		Parent = Config.Parent,
+	    Name = "FatCatButton",
+	
+	    Size = UDim2.fromOffset(50, 50),
+	    Position = UDim2.fromOffset(45, 85),
+	    AnchorPoint = Vector2.new(0.5, 0.5),
+	
+	    BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+	    BackgroundTransparency = 0,
+	    BorderSizePixel = 0,
+	
+	    Image = Config.ToggleIcon or "rbxassetid://13717478897",
+	    ImageTransparency = 0,
+	    ScaleType = Enum.ScaleType.Crop,
+	
+	    AutoButtonColor = false,
+	    Active = true,
+	    Visible = true,
+	
+	    ZIndex = 999999,
+	
+	    Parent = Config.Parent,
 	}, {
-		New("UICorner", {
-			CornerRadius = UDim.new(1, 0),
-		}),
+	    New("UICorner", {
+	        CornerRadius = UDim.new(1, 0),
+	    }),
 	})
+	
+	Window.ToggleButton = FatCatButton
 	
 	local FatCatScale = New("UIScale", {
 		Scale = 1,
