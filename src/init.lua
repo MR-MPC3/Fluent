@@ -16,20 +16,9 @@ local NotificationModule = require(Components.Notification)
 local New = Creator.New
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
-local GuiParent
-if RunService:IsStudio() then
-    GuiParent = LocalPlayer.PlayerGui
-else
-    GuiParent = (gethui and gethui()) or game:GetService("CoreGui")
-end
 local GUI = New("ScreenGui", {
-    Name = "FluentGUI",
-    Parent = GuiParent,
-    ResetOnSpawn = false,
-    ZIndexBehavior = Enum.ZIndexBehavior.Global,
-    DisplayOrder = 999999,
+	Parent = RunService:IsStudio() and LocalPlayer.PlayerGui or game:GetService("CoreGui"),
 })
-
 ProtectGui(GUI)
 NotificationModule:Init(GUI)
 
@@ -139,10 +128,6 @@ function Library:CreateWindow(Config)
 		Title = Config.Title,
 		SubTitle = Config.SubTitle,
 		TabWidth = Config.TabWidth,
-	
-		-- Floating Fat Cat Button
-		ToggleIcon = Config.ToggleIcon,
-		StartMinimized = Config.StartMinimized,
 	})
 
 	Library.Window = Window
