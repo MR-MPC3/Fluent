@@ -510,6 +510,13 @@ return function(Config)
 		if require(Root).UseAcrylic then
 			Window.AcrylicPaint.Model:Destroy()
 		end
+
+		-- BUTTON FAT CATHUB
+		if Window.ToggleButton then
+		   Window.ToggleButton:Destroy()
+		   Window.ToggleButton = nil
+		end
+				
 		Window.Root:Destroy()
 	end
 
